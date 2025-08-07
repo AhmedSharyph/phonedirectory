@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shaviyani Health Directory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <!-- Bootstrap 5 CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  
+  <style>
+    body {
+      background-color: #f7f9fc;
+      color: #333;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    h1 {
+      color: #1a5fb4;
+      margin-bottom: 30px;
+      text-align: center;
+      font-weight: 600;
+    }
+    .center-group {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 40px;
+      padding: 20px;
+    }
+    .center-group h2 {
+      color: #1a5fb4;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      font-size: 0.95rem;
+      user-select: none; /* prevent text selection on header click */
+    }
+    th, td {
+      cursor: pointer; /* indicate headers are clickable */
+    }
+    th {
+      background-color: #f0f4fa;
+      font-weight: 600;
+      position: relative;
+    }
+    th .sort-arrow {
+      font-size: 0.7rem;
+      margin-left: 5px;
+      user-select: none;
+    }
+    td a {
+      text-decoration: none;
+    }
+    td a:hover {
+      text-decoration: underline;
+    }
+    .no-results {
+      color: #666;
+      font-style: italic;
+      text-align: center;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Shaviyani Health Directory</h1>
+
+    <div class="mb-4">
+      <input
+        type="search"
+        class="form-control form-control-lg"
+        id="searchInput"
+        placeholder="🔍 Search by any field..."
+        autocomplete="off"
+      />
+    </div>
+
+    <div id="directoryContainer">
+      <p class="no-results">Loading data…</p>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script src="https://raw.githubusercontent.com/AhmedSharyph/js/main/teledirectory.js"></script>
+</body>
+</html>

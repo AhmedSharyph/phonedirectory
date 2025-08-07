@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Health Directory with Search</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 20px;
+      background: #f7f9fc;
+      color: #333;
+    }
+    input#searchInput {
+      width: 90%;
+      max-width: 500px;
+      padding: 10px 15px;
+      font-size: 1em;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: border-color 0.3s;
+    }
+    input#searchInput:focus {
+      outline: none;
+      border-color: #1a5fb4;
+      box-shadow: 0 0 0 2px rgba(26, 95, 180, 0.2);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1em;
+      background: white;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+      font-size: 0.95em;
+    }
+    th {
+      background-color: #f0f4fa;
+    }
+    tr.no-match {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center;">Shaviyani Health Directory</h2>
+  <input id="searchInput" type="text" placeholder="🔍 Search by any field..." />
+
+  <table id="directoryTable">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwndImcPMsQCTx1xLtxolE7Q7nOdN_nVpmOh7fw0U0Sy0-0u30Chp6ovUVhJgk2XdRuNg/exec';
+
+    let data = [];
+    let headers = [];
+
+    // Normalize string for search
+    function normalize(str) {
+      return (str || '').toString().toLowerCase().trim();
+    }
+
+    function renderTable(data) {
+      const tableHead = document.querySelector("#directoryTable thead");
+      const tableBody = document.querySelector("#directoryTable tbody");
+
+      tableHead.innerHTML = '';
+      tableBody.innerHTML = '';
+
+      if (!data.length) {
+        tableBody.innerHTML = '<tr><td colspan="100%">No data found</td></tr>';
+        return;
+      }
+
+      // headers from first object keys
+      headers = Object.keys(data[0]);
+
+      // build header row
+      const headRow = document.createElement('tr');
+      headers.forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        headRow.appendChild(th);
+      });
+      tableHead.appendChild(headRow);
+
+      // build body rows
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        headers.forEach(h => {
+          const td = document.createElement('td');
+          td.textContent = row[h] || '';
+          tr.appendChild(td);
+        });
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function filterTable(term) {
+      const tableBody = document.querySelector("#directoryTable tbody");
+      const trs = tableBody.querySelectorAll('tr');
+
+      trs.forEach(tr => {
+        const text = tr.textContent.toLowerCase();
+        tr.style.display = text.includes(term) ? '' : 'none';
+      });
+    }
+
+    // Fetch and render
+    fetch(WEB_APP_URL)
+      .then(res => res.json())
+      .then(json => {
+        data = json;
+        renderTable(data);
+      })
+      .catch(err => {
+        alert('Failed to fetch data');
+        console.error(err);
+      });
+
+    // Search input event
+    document.getElementById('searchInput').addEventListener('input', e => {
+      const term = normalize(e.target.value);
+      filterTable(term);
+    });
+  </script>
+</body>
+</html>

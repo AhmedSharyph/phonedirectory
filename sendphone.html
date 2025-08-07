@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit Contact Info</title>
+  
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  
+  <!-- Tom Select CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: #f8f9fa;
+    }
+    .card {
+      border-radius: 1rem;
+    }
+    .form-control, .form-select, .ts-control {
+      border-radius: 0.5rem;
+    }
+    .btn-success {
+      transition: all 0.3s ease;
+    }
+    .btn-success:disabled {
+      background-color: #198754;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-8">
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white text-center">
+            <h5 class="mb-0"><i class="bi bi-person-lines-fill me-2"></i>Submit Contact Details</h5>
+          </div>
+          <div class="card-body">
+            <form id="contactForm">
+                <div class="mb-3">
+  <label for="healthCenter" class="form-label">Health Center</label>
+  <select class="form-select" id="healthCenter" name="Health Center" required></select>
+</div>
+
+
+
+              <div class="mb-3">
+                <label for="contactNumber" class="form-label">Contact Number</label>
+                <input type="tel" class="form-control" id="contactNumber" name="Contact Number" required>
+              </div>
+<div class="mb-3">
+  <label for="department" class="form-label">Department</label>
+  <select class="form-select" id="department" name="Department" required></select>
+</div>
+
+
+
+              <div class="mb-3">
+                <label for="assignedTo" class="form-label">Assigned Staff Name</label>
+                <input type="text" class="form-control" id="assignedTo" name="Assigned To" required>
+              </div>
+<div class="mb-3">
+  <label for="role" class="form-label">Role or Function</label>
+  <select class="form-select" id="role" name="Role or Function" required></select>
+</div>
+              <div class="d-grid">
+                <button type="submit" class="btn btn-success">
+                  <i class="bi bi-send-check-fill me-1"></i> Submit
+                </button>
+              </div>
+            </form>
+            <div id="formAlert" class="alert mt-4 d-none" role="alert"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Tom Select JS -->
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxI_5lWR-Bvk-FfqFgM2yp_tCgbGcUqxQY1kgPgAMb-7FdpyFTlfp3cvkBNoW2uTou77w/exec";
+
+    const healthCenterSelect = document.getElementById('healthCenter');
+    const departmentSelect = document.getElementById('department');
+    const roleSelect = document.getElementById('role');
+
+    // Generic dropdown population function
+    function populateSelect(selectElem, options, placeholderText, allowTyping = true, allowCreate = true, sort = true) {
+      const defaultOption = new Option(placeholderText, "", true, true);
+      defaultOption.disabled = true;
+      selectElem.add(defaultOption);
+
+      if (sort) {
+        options.sort();
+      }
+
+      options.forEach(value => {
+        const option = new Option(value, value);
+        selectElem.add(option);
+      });
+
+      new TomSelect(selectElem, {
+        create: allowCreate,      // allow adding new options only if true
+        placeholder: placeholderText,
+        maxItems: 1,
+        sortField: sort ? "text" : undefined,
+        // typing/search enabled by default when create is true or false
+      });
+    }
+
+    fetch(WEB_APP_URL + "?action=getDropdownData")
+      .then(response => response.json())
+      .then(data => {
+        populateSelect(healthCenterSelect, data.healthCenters, "Select a Health Center", true, false, false); // typing yes, no create, no sort
+        populateSelect(departmentSelect, data.departments, "Select a Department", true, true, true);          // typing yes, create yes, sorted
+        populateSelect(roleSelect, data.roles, "Select a Role or Function", true, true, true);                // typing yes, create yes, sorted
+      })
+      .catch(err => {
+        console.error(err);
+        const alertBox = document.getElementById('formAlert');
+        alertBox.className = 'alert alert-danger';
+        alertBox.textContent = 'Failed to load dropdown data. Please refresh.';
+        alertBox.classList.remove('d-none');
+      });
+  });
+</script>
+
+
+
+  <script>
+    const form = document.getElementById('contactForm');
+    const alertBox = document.getElementById('formAlert');
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzL2KKwec0TU0r-WpsrVoSZykstA1v8Am4fvlQN6J-W8manlp32_JWG0UH41OsbQe3ZAA/exec';
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Submitting...';
+
+      const formData = new FormData(form);
+
+      fetch(scriptURL, { method: 'POST', body: formData })
+        .then(response => {
+          if (!response.ok) throw new Error('Submission failed');
+          return response;
+        })
+        .then(() => {
+          alertBox.className = 'alert alert-success';
+          alertBox.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Contact information submitted successfully.';
+          alertBox.classList.remove('d-none');
+          form.reset();
+        })
+        .catch(error => {
+          console.error('Error!', error.message);
+          alertBox.className = 'alert alert-danger';
+          alertBox.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i>Error submitting data. Try again.';
+          alertBox.classList.remove('d-none');
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="bi bi-send-check-fill me-1"></i> Submit';
+          alertBox.scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+  </script>
+
+</body>
+</html>

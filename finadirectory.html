@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shaviyani Health Centers - Contact Directory</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #f7f9fc;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1a5fb4;
+    }
+
+    p.description {
+      text-align: center;
+      max-width: 600px;
+      margin: 10px auto 30px;
+      color: #555;
+      font-size: 1.1em;
+    }
+
+    #searchInput {
+      display: block;
+      margin: 0 auto 30px;
+      padding: 12px 16px;
+      width: 90%;
+      max-width: 500px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1em;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: border-color 0.3s;
+    }
+
+    #searchInput:focus {
+      outline: none;
+      border-color: #1a5fb4;
+      box-shadow: 0 0 0 2px rgba(26, 95, 180, 0.2);
+    }
+
+    h2 {
+      color: #1a5fb4;
+      margin-top: 40px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      margin-bottom: 30px;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+      font-size: 0.95em;
+    }
+
+    th {
+      background-color: #f0f4fa;
+    }
+
+    td a {
+      color: #1a5fb4;
+      text-decoration: none;
+    }
+
+    td a:hover {
+      text-decoration: underline;
+    }
+
+    .loading, .no-results {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 20px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Shaviyani Atoll Health Center Contacts</h1>
+  <p class="description">
+    Contact the respective health center for services, appointments, or public health inquiries.
+  </p>
+
+  <input type="text" id="searchInput" placeholder="🔍 Search by center, name, role, or phone..." onkeyup="filterContacts()" />
+
+  <div id="directoryContainer">
+    <div class="loading">Loading contacts from database...</div>
+  </div>
+
+  <script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwndImcPMsQCTx1xLtxolE7Q7nOdN_nVpmOh7fw0U0Sy0-0u30Chp6ovUVhJgk2XdRuNg/exec';
+
+    let allRows = [];
+
+    async function loadContacts() {
+      try {
+        const response = await fetch(WEB_APP_URL);
+        const data = await response.json();
+
+        const container = document.getElementById('directoryContainer');
+        container.innerHTML = '';
+
+        if (!data || data.length === 0) {
+          container.innerHTML = '<div class="no-results">No contacts found.</div>';
+          return;
+        }
+
+        // Group by Health Center
+        const grouped = {};
+        data.forEach(item => {
+          const center = item['Health Center']?.trim() || 'Unknown';
+          if (!grouped[center]) grouped[center] = [];
+          grouped[center].push(item);
+        });
+
+        for (const center in grouped) {
+          const section = document.createElement('section');
+          section.innerHTML = `
+            <h2>${center}</h2>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Department</th>
+                    <th>Phone</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${grouped[center].map(person => {
+                    const fullName = person['Assigned To']?.trim() || '';
+                    const role = person['Role or Function']?.trim() || '';
+                    const dept = person['Department']?.trim() || '';
+                    const phone = person['Contact Number']?.toString().trim() || '';
+                    const search = `${center} ${fullName} ${role} ${dept} ${phone}`.toLowerCase();
+
+                    return `
+                      <tr class="data-row" data-search="${search}">
+                        <td>${fullName}</td>
+                        <td>${role}</td>
+                        <td>${dept}</td>
+                        <td><a href="tel:${phone}">📞 ${phone}</a></td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+          container.appendChild(section);
+        }
+
+        allRows = Array.from(document.querySelectorAll('.data-row'));
+
+      } catch (err) {
+        document.getElementById('directoryContainer').innerHTML =
+          '<div class="no-results">Error loading contacts. Please try again later.</div>';
+        console.error('Error:', err);
+      }
+    }
+
+    function filterContacts() {
+      const term = document.getElementById('searchInput').value.trim().toLowerCase();
+
+      if (term === '') {
+        allRows.forEach(row => row.style.display = '');
+        document.querySelectorAll('.table-wrapper').forEach(table => table.style.display = '');
+        document.querySelectorAll('.no-results-message').forEach(msg => msg.remove());
+        return;
+      }
+
+      let visibleCount = 0;
+
+      allRows.forEach(row => {
+        const match = row.dataset.search.includes(term);
+        row.style.display = match ? '' : 'none';
+        if (match) visibleCount++;
+      });
+
+      document.querySelectorAll('.table-wrapper').forEach(wrapper => {
+        const visibleRows = wrapper.querySelectorAll('tbody tr:not([style*="display: none"])');
+        wrapper.style.display = visibleRows.length > 0 ? '' : 'none';
+      });
+
+      const container = document.getElementById('directoryContainer');
+      if (visibleCount === 0 && !document.querySelector('.no-results-message')) {
+        const msg = document.createElement('div');
+        msg.className = 'no-results no-results-message';
+        msg.textContent = 'No matching contacts found.';
+        container.appendChild(msg);
+      } else if (visibleCount > 0) {
+        const msg = document.querySelector('.no-results-message');
+        if (msg) msg.remove();
+      }
+    }
+
+    window.onload = loadContacts;
+  </script>
+
+</body>
+</html>

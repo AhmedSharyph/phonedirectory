@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fridge Metadata Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5 mb-5">
+  <div class="card shadow rounded-4">
+    <div class="card-header bg-primary text-white rounded-top-4">
+      <h4 class="mb-0">Vaccine Refrigerator Metadata Form</h4>
+    </div>
+    <div class="card-body">
+      <form id="fridgeForm">
+        
+        <!-- Site Name -->
+        <div class="mb-3">
+          <label class="form-label">Site Name</label>
+          <input type="text" name="Site Name" class="form-control" value="Shaviyani Atoll Hospital"  />
+        </div>
+
+        <!-- Location -->
+        <div class="mb-3">
+          <label class="form-label">Location</label>
+          <input type="text" name="Location" class="form-control"  />
+        </div>
+
+        <!-- Type of Site -->
+        <div class="mb-3">
+          <label class="form-label">Type of Site</label>
+          <select name="Type of Site" class="form-select" >
+            <option value="">Select...</option>
+            <option>Atoll</option>
+            <option>Island</option>
+          </select>
+        </div>
+
+        <!-- Equipment Type -->
+        <div class="mb-3">
+          <label class="form-label">Equipment Type</label>
+          <select name="Equipment Type" class="form-select" >
+            <option value="">Select...</option>
+            <option>ILR</option>
+            <option>Deep Freezer</option>
+            <option>Refrigerator</option>
+            <option>Cold Box</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <!-- Equipment Model -->
+        <div class="mb-3">
+          <label class="form-label">Equipment Model</label>
+          <input type="text" name="Equipment Model" class="form-control"  />
+        </div>
+
+        <!-- Serial Number -->
+        <div class="mb-3">
+          <label class="form-label">Serial Number</label>
+          <input type="text" name="Serial Number" class="form-control"  />
+        </div>
+
+        <!-- Year of Installation -->
+        <div class="mb-3">
+          <label class="form-label">Year of Installation</label>
+          <input type="number" name="Year of Installation" class="form-control" min="1990" max="2099"  />
+        </div>
+
+        <!-- Date Received -->
+        <div class="mb-3">
+          <label class="form-label">Date Received</label>
+          <input type="date" name="Date Received" class="form-control"  />
+        </div>
+
+        <!-- Date of Installation -->
+        <div class="mb-3">
+          <label class="form-label">Date of Installation</label>
+          <input type="date" name="Date of Installation" class="form-control"  />
+        </div>
+
+        <!-- Operational Status -->
+        <div class="mb-3">
+          <label class="form-label">Operational Status</label>
+          <select name="Operational Status" class="form-select" >
+            <option value="">Select...</option>
+            <option>Working</option>
+            <option>Deactivated</option>
+            <option>Decommissioned</option>
+            <option>Under Maintenance</option>
+            <option>Faulty</option>
+          </select>
+        </div>
+
+        <!-- Deactivated Date -->
+        <div class="mb-3">
+          <label class="form-label">Deactivated Date</label>
+          <input type="date" name="Deactivated Date" class="form-control" />
+        </div>
+
+        <!-- Reactivated Date -->
+        <div class="mb-3">
+          <label class="form-label">Reactivated Date</label>
+          <input type="date" name="Reactivated Date" class="form-control" />
+        </div>
+
+        <!-- Decommissioned Date -->
+        <div class="mb-3">
+          <label class="form-label">Decommissioned Date</label>
+          <input type="date" name="Decommissioned Date" class="form-control" />
+        </div>
+
+        <!-- Stabilizer -->
+        <div class="mb-3">
+          <label class="form-label">Stabilizer</label>
+          <select name="Stabilizer" class="form-select" >
+            <option value="">Select...</option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
+
+        <!-- If Stabilizer Not Attached -->
+        <div class="mb-3">
+          <label class="form-label">If Stabilizer Not Attached</label>
+          <select name="If Stabilizer Not Attached" class="form-select">
+            <option value="">Select...</option>
+            <option>Built-in</option>
+            <option>Not </option>
+            <option>Unknown</option>
+          </select>
+        </div>
+
+        <!-- Repair Count -->
+        <div class="mb-3">
+          <label class="form-label">Number of Times Repaired (Major$) Last Year</label>
+          <input type="number" name="Number of Times Equipment Repaired (Major$) Last Year" class="form-control" min="0" />
+        </div>
+
+        <!-- Maintenance Logs -->
+        <div class="mb-3">
+          <label class="form-label">Maintenance Logs</label>
+          <textarea name="Maintenance Logs" class="form-control" rows="3"></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="d-grid">
+          <button type="submit" class="btn btn-success">Submit Metadata</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('fridgeForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const formData = new FormData(form);
+  const data = {};
+  formData.forEach((value, key) => data[key] = value);
+
+  fetch('https://script.google.com/macros/s/AKfycbzMNaNMTNrOuW41BcofgWxWh4ByrXkhXxbdkgYeqs_-mlDrKtSARTbFqj1Zovv-DD_B/exec', {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify(data)
+  });
+
+  alert("Metadata submitted!");
+  form.reset();
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shaviyani Health Directory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f7f9fc;
+      color: #333;
+      margin: 20px;
+      padding: 0 10px;
+    }
+    h1 {
+      text-align: center;
+      color: #1a5fb4;
+      margin-bottom: 0.3em;
+    }
+    #searchInput {
+      display: block;
+      margin: 0 auto 25px;
+      padding: 12px 20px;
+      max-width: 500px;
+      width: 90%;
+      font-size: 1.1em;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: border-color 0.3s;
+    }
+    #searchInput:focus {
+      outline: none;
+      border-color: #1a5fb4;
+      box-shadow: 0 0 0 3px rgba(26, 95, 180, 0.3);
+    }
+    section.center-group {
+      margin-bottom: 40px;
+      background: white;
+      padding: 15px 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    section.center-group h2 {
+      margin-top: 0;
+      color: #1a5fb4;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 6px;
+      font-weight: 600;
+      font-size: 1.5em;
+    }
+    .table-wrapper {
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95em;
+    }
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f4fa;
+      font-weight: 600;
+    }
+    td a {
+      color: #1a5fb4;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    td a:hover {
+      text-decoration: underline;
+    }
+    .no-results {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      margin-top: 20px;
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Shaviyani Health Directory</h1>
+  <input id="searchInput" type="search" placeholder="🔍 Search by any field..." />
+
+  <div id="directoryContainer">
+    <p class="no-results">Loading data…</p>
+  </div>
+
+  <script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwndImcPMsQCTx1xLtxolE7Q7nOdN_nVpmOh7fw0U0Sy0-0u30Chp6ovUVhJgk2XdRuNg/exec';
+
+    // Normalize string for search
+    const normalize = str => (str || '').toString().toLowerCase().replace(/\s+/g, ' ').trim();
+
+    let allRows = []; // will hold all data row DOM elements for filtering
+
+    async function loadData() {
+      try {
+        const res = await fetch(WEB_APP_URL);
+        const data = await res.json();
+
+        const container = document.getElementById('directoryContainer');
+        container.innerHTML = '';
+
+        if (!data.length) {
+          container.innerHTML = '<p class="no-results">No data found.</p>';
+          return;
+        }
+
+        // Group by Health Center
+        const grouped = {};
+        data.forEach(item => {
+          const center = (item['Health Center'] ?? 'Unknown').trim();
+          if (!grouped[center]) grouped[center] = [];
+          grouped[center].push(item);
+        });
+
+        // Build DOM sections per group
+        for (const center in grouped) {
+          const section = document.createElement('section');
+          section.className = 'center-group';
+          section.dataset.center = center.toLowerCase();
+
+          // Build table rows for this group
+          const rowsHtml = grouped[center].map(person => {
+            const fullName = (person['Assigned To'] ?? '').trim();
+            const role = (person['Role  or Function'] ?? '').trim();
+            const dept = (person['Department'] ?? '').trim();
+            const phoneRaw = person['Contact Number'] ?? '';
+            const phone = phoneRaw.toString().trim();
+
+            // Prepare search text combining all fields for filtering
+            const searchText = normalize(`${center} ${fullName} ${role} ${dept} ${phone}`);
+
+            return `
+              <tr class="data-row" data-search="${searchText}">
+                <td>${fullName}</td>
+                <td>${role}</td>
+                <td>${dept}</td>
+                <td><a href="tel:${phone}">📞 ${phone}</a></td>
+              </tr>
+            `;
+          }).join('');
+
+          section.innerHTML = `
+            <h2>${center}</h2>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Role or Function</th>
+                    <th>Department</th>
+                    <th>Phone</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rowsHtml}
+                </tbody>
+              </table>
+            </div>
+          `;
+
+          container.appendChild(section);
+        }
+
+        // Cache all rows for filtering
+        allRows = Array.from(document.querySelectorAll('.data-row'));
+
+      } catch (e) {
+        document.getElementById('directoryContainer').innerHTML = '<p class="no-results">Failed to load data. Please try again later.</p>';
+        console.error(e);
+      }
+    }
+
+    function filterData() {
+      const term = normalize(document.getElementById('searchInput').value);
+
+      if (!term) {
+        allRows.forEach(row => row.style.display = '');
+        document.querySelectorAll('section.center-group').forEach(sec => sec.style.display = '');
+        document.querySelectorAll('.no-results-message').forEach(msg => msg.remove());
+        return;
+      }
+
+      let anyVisible = false;
+
+      allRows.forEach(row => {
+        const match = row.dataset.search.includes(term);
+        row.style.display = match ? '' : 'none';
+        if (match) anyVisible = true;
+      });
+
+      // Hide groups with no visible rows
+      document.querySelectorAll('section.center-group').forEach(section => {
+        const visibleRows = section.querySelectorAll('tbody tr:not([style*="display: none"])');
+        section.style.display = visibleRows.length ? '' : 'none';
+      });
+
+      // Show no-results message if nothing visible
+      const container = document.getElementById('directoryContainer');
+      if (!anyVisible && !document.querySelector('.no-results-message')) {
+        const msg = document.createElement('p');
+        msg.className = 'no-results no-results-message';
+        msg.textContent = 'No matching contacts found.';
+        container.appendChild(msg);
+      } else if (anyVisible) {
+        const msg = document.querySelector('.no-results-message');
+        if (msg) msg.remove();
+      }
+    }
+
+    document.getElementById('searchInput').addEventListener('input', filterData);
+
+    window.onload = loadData;
+  </script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Debug Health Directory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f7f9fc;
+      color: #333;
+      margin: 20px;
+      padding: 0 10px;
+    }
+    h1 {
+      text-align: center;
+      color: #1a5fb4;
+    }
+    pre {
+      background: #eee;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      max-height: 300px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1em;
+      background: white;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f4fa;
+    }
+    .no-results {
+      text-align: center;
+      font-style: italic;
+      color: #666;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Debug Health Directory</h1>
+
+  <div id="directoryContainer">
+    <p class="no-results">Loading data…</p>
+  </div>
+
+  <script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwndImcPMsQCTx1xLtxolE7Q7nOdN_nVpmOh7fw0U0Sy0-0u30Chp6ovUVhJgk2XdRuNg/exec';
+
+    async function loadData() {
+      const container = document.getElementById('directoryContainer');
+      try {
+        console.log('Starting fetch from GAS URL:', WEB_APP_URL);
+        const response = await fetch(WEB_APP_URL);
+
+        console.log('Fetch response status:', response.status);
+
+        if (!response.ok) {
+          container.innerHTML = `<p class="no-results">Failed to fetch data. HTTP Status: ${response.status}</p>`;
+          return;
+        }
+
+        const data = await response.json();
+        console.log('Fetched data:', data);
+
+        if (!Array.isArray(data) || data.length === 0) {
+          container.innerHTML = '<p class="no-results">No data found in response.</p>';
+          return;
+        }
+
+        // Log keys of first item to check headers
+        console.log('Data keys:', Object.keys(data[0]));
+
+        // Simple table display (no grouping yet)
+        container.innerHTML = '';
+
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        const tbody = document.createElement('tbody');
+
+        // Headers from first object keys
+        const headers = Object.keys(data[0]);
+
+        const headRow = document.createElement('tr');
+        headers.forEach(header => {
+          const th = document.createElement('th');
+          th.textContent = header;
+          headRow.appendChild(th);
+        });
+        thead.appendChild(headRow);
+
+        data.forEach(row => {
+          const tr = document.createElement('tr');
+          headers.forEach(header => {
+            const td = document.createElement('td');
+            td.textContent = row[header] || '';
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+        table.appendChild(thead);
+        table.appendChild(tbody);
+        container.appendChild(table);
+
+      } catch (error) {
+        console.error('Fetch or parse error:', error);
+        container.innerHTML = '<p class="no-results">Error loading data. Check console for details.</p>';
+      }
+    }
+
+    window.onload = loadData;
+  </script>
+
+</body>
+</html>
