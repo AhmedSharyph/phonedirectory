@@ -1,4 +1,3 @@
-<script>
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwndImcPMsQCTx1xLtxolE7Q7nOdN_nVpmOh7fw0U0Sy0-0u30Chp6ovUVhJgk2XdRuNg/exec';
 
     function normalize(str) {
@@ -174,4 +173,3 @@
     document.getElementById('searchInput').addEventListener('input', filterData);
 
     window.onload = loadData;
-  </script>
