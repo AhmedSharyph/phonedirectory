@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm" role="navigation" aria-label="Main navigation">
       <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="index.html">
-          <img src="path/to/your-logo.png" alt="Logo" width="30" height="30" class="me-2" />
+          <img src="./images/your-logo.png" alt="Logo" width="30" height="30" class="me-2" />
           Shaviyani Health Directory
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -50,3 +50,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
