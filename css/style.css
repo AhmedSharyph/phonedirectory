@@ -4,7 +4,6 @@ body {
   padding-top: 70px; /* space for fixed navbar */
   min-height: 100vh;
 }
-
 .center-group {
   background: #fff;
   border-radius: 12px;
@@ -12,68 +11,46 @@ body {
   margin-bottom: 40px;
   padding: 20px;
 }
-
 .center-group h2 {
   color: #1a5fb4;
   border-bottom: 2px solid #ddd;
   padding-bottom: 8px;
   margin-bottom: 20px;
 }
-
 table {
   width: 100%;
   font-size: 1rem;
   user-select: none;
 }
-
 th, td {
   cursor: pointer;
 }
-
 td {
   font-weight: 550;
 }
-
 th {
   background-color: #f0f4fa;
   font-weight: 650;
   position: relative;
 }
-
 th .sort-arrow {
   font-size: 0.7rem;
   margin-left: 5px;
   user-select: none;
 }
-
 td a {
   text-decoration: none;
 }
-
 td a:hover {
   text-decoration: underline;
 }
-
 .no-results {
   color: #666;
   font-style: italic;
   text-align: center;
   margin-top: 30px;
 }
-
-/* NAVBAR SPECIFIC STYLES */
-
-/* Container fluid fix for flexbox shrinking issues */
-.container-fluid {
-  min-width: 0; /* prevents overflow in flex container */
-}
-
-/* Prevent logo from shrinking */
-.navbar-brand.flex-shrink-0 {
-  flex-shrink: 0 !important;
-}
-
-/* Hide text next to logo on smaller screens (<992px) */
+/* Hide the text next to logo on screens smaller than lg (992px) */
 .navbar-brand span {
   user-select: none;
 }
@@ -84,15 +61,13 @@ td a:hover {
   }
 }
 
-/* Search input styling and width control */
+/* Make sure search input width is reasonable on all screens */
 #navbarSearchInput {
-  width: 100%;
-  min-width: 0;
   min-width: 200px;
   max-width: 500px;
 }
 
-/* Smaller search input on very small screens */
+/* On very small screens, reduce search input width */
 @media (max-width: 575.98px) {
   #navbarSearchInput {
     min-width: 100px;
@@ -100,8 +75,7 @@ td a:hover {
   }
 }
 
-/* Responsive font size and weight adjustments for table */
-
+/* Responsive font size and weight adjustments */
 @media (max-width: 575.98px) {
   table {
     font-size: 0.85rem;
