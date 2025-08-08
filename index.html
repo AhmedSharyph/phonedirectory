@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shaviyani Health Directory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <!-- Bootstrap 5 CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  
+  <style>
+    body {
+      background-color: #f7f9fc;
+      color: #333;
+      padding-top: 70px; /* space for fixed navbar */
+      min-height: 100vh;
+    }
+    .center-group {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 40px;
+      padding: 20px;
+    }
+    .center-group h2 {
+      color: #1a5fb4;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      font-size: 1rem;
+      user-select: none;
+    }
+    th, td {
+      cursor: pointer;
+    }
+    td {
+      font-weight: 550;
+    }
+    th {
+      background-color: #f0f4fa;
+      font-weight: 650;
+      position: relative;
+    }
+    th .sort-arrow {
+      font-size: 0.7rem;
+      margin-left: 5px;
+      user-select: none;
+    }
+    td a {
+      text-decoration: none;
+    }
+    td a:hover {
+      text-decoration: underline;
+    }
+    .no-results {
+      color: #666;
+      font-style: italic;
+      text-align: center;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div id="headerContainer"></div>
+
+  <!-- Dynamic Header will be injected here -->
+  <div id="headerContainer"></div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <div class="mb-4">
+      <input
+        type="search"
+        class="form-control form-control-lg"
+        id="searchInput"
+        placeholder="🔍 Search by any field..."
+        autocomplete="off"
+      />
+    </div>
+
+    <div id="directoryContainer">
+      <p class="no-results">Loading data…</p>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Load dynamic header -->
+  <script src="js/header.js"></script>
+
+ 
+    <script src="js/header.js"></script>
+        <script src="js/script.js"></script>
+
+    
+</body>
+</html>
