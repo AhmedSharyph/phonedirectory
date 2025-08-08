@@ -60,7 +60,7 @@
                     <th data-col="0">Phone <span class="sort-arrow"></span></th>
                     <th data-col="1">Department <span class="sort-arrow"></span></th>
                     <th data-col="2">Assignee<span class="sort-arrow"></span></th>
-                    <th data-col="3">Role or Function <span class="sort-arrow"></span></th>
+                    <th data-col="3">Role <span class="sort-arrow"></span></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -174,3 +174,4 @@
 
 
     window.onload = loadData;
+
