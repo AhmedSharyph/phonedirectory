@@ -70,6 +70,30 @@ td a:hover {
   text-align: center;
   margin-top: 30px;
 }
+/* Hide the text next to logo on screens smaller than lg (992px) */
+.navbar-brand span {
+  user-select: none;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-brand span {
+    display: none !important;
+  }
+}
+
+/* Make sure search input width is reasonable on all screens */
+#navbarSearchInput {
+  min-width: 200px;
+  max-width: 500px;
+}
+
+/* On very small screens, reduce search input width */
+@media (max-width: 575.98px) {
+  #navbarSearchInput {
+    min-width: 100px;
+    max-width: 250px;
+  }
+}
 
 /* Responsive font size and weight adjustments */
 @media (max-width: 575.98px) {
