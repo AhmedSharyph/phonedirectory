@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Shaviyani Health Directory</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
   <!-- PWA manifest -->
   <link rel="manifest" href="https://ahmedsharyph.github.io/shaviyanihealthdirectory/manifest.json">
@@ -19,13 +19,49 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
   <style>
+    /* Body with padding for fixed header and bottom search */
     body {
       background-color: #f7f9fc;
       color: #333;
       padding-top: 70px; /* space for fixed navbar */
+      padding-bottom: 70px; /* space for fixed search on mobile */
       min-height: 100vh;
+      scroll-padding-top: 70px; /* for smooth scroll focus */
     }
 
+    /* Fixed navbar styles */
+    #headerContainer .navbar {
+      position: fixed !important;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1100;
+      transform: translateZ(0); /* fix mobile jitter */
+      background-color: #fff !important; /* ensure white bg */
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+    }
+
+    /* Search container fixed at bottom on mobile */
+    @media (max-width: 575.98px) {
+      .search-container-fixed {
+        position: fixed;
+        bottom: env(safe-area-inset-bottom, 0);
+        left: 0;
+        right: 0;
+        background: #fff;
+        padding: 8px 12px;
+        box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+        z-index: 1050;
+      }
+
+      #searchInput {
+        width: 100%;
+        border-radius: 25px;
+        font-size: 1rem;
+      }
+    }
+
+    /* Center group and table styling */
     .center-group {
       background: #fff;
       border-radius: 12px;
@@ -82,7 +118,7 @@
       margin-top: 30px;
     }
 
-    /* Responsive font size adjustments */
+    /* Responsive font sizes */
     @media (max-width: 575.98px) {
       table {
         font-size: 0.85rem;
@@ -118,41 +154,20 @@
         font-weight: 650;
       }
     }
-
-    /* Fixed search bar for mobile like ChatGPT */
-    @media (max-width: 575.98px) {
-      .search-container-fixed {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: #fff;
-        padding: 8px;
-        box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
-        z-index: 1050;
-      }
-      #searchInput {
-        width: 100%;
-        border-radius: 25px;
-      }
-      body {
-        padding-bottom: 70px; /* space for fixed search bar */
-      }
-    }
   </style>
 </head>
 <body>
   <!-- Header -->
   <div id="headerContainer"></div>
 
-  <!-- Main content -->
+  <!-- Main container -->
   <div class="container">
     <div id="directoryContainer">
       <p class="no-results">Loading data…</p>
     </div>
   </div>
 
-  <!-- Search bar fixed for mobile -->
+  <!-- Search bar fixed bottom for mobile -->
   <div class="search-container-fixed d-sm-none">
     <input
       type="search"
@@ -160,33 +175,53 @@
       id="searchInput"
       placeholder="🔍 Search by any field..."
       autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
     />
   </div>
 
-  <!-- Search bar normal for larger screens -->
+  <!-- Search bar normal position for tablet/desktop -->
   <div class="container d-none d-sm-block mt-4">
     <input
       type="search"
       class="form-control form-control-lg"
-      id="searchInput"
+      id="searchInputDesktop"
       placeholder="🔍 Search by any field..."
       autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
     />
   </div>
 
-  <!-- Bootstrap 5 JS -->
+  <!-- Bootstrap 5 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- Load dynamic header -->
   <script src="js/header.js"></script>
   <script src="js/script.js"></script>
 
+  <!-- Fix scroll jump when keyboard opens on mobile -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('focus', () => {
+          setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }, 200);
+        });
+      }
+    });
+  </script>
+
   <!-- Service Worker -->
   <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("service-worker.js")
-        .then(reg => console.log("Service Worker registered:", reg.scope))
-        .catch(err => console.error("Service Worker registration failed:", err));
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('Service Worker registered:', reg.scope))
+        .catch(err => console.error('Service Worker registration failed:', err));
     }
   </script>
 </body>
