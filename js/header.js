@@ -1,7 +1,7 @@
 // header.js
 document.addEventListener('DOMContentLoaded', () => {
   const headerHTML = `
-    <nav class="navbar navbar-expand-lg fixed-top shadow-sm border-bottom" role="navigation" aria-label="Main navigation">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm border-bottom" role="navigation" aria-label="Main navigation">
       <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="index.html">
           <img src="https://ahmedsharyph.github.io/shaviyanihealthdirectory/images/logo.png" 
